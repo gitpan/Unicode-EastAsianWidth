@@ -6,7 +6,7 @@ use base 'Exporter';
 use vars qw( $VERSION $EastAsian );
 
 BEGIN {
-    $VERSION = '1.30';
+    $VERSION = '1.31';
     $EastAsian = 0;
 };
 
@@ -445,15 +445,18 @@ released October 14, 2007.
     /\p{InEastAsianAmbiguous}/; # True
     /\p{InFullwidth}/;          # False
 
-    {
-        local $Unicode::EastAsianWidth::EastAsian = 1;
-        /\p{InFullwidth}/;      # True (this only works on Perl 5.8+)
-    }
+To mark ambiguous-width characters as InFullwidth:
+
+    BEGIN { $Unicode::EastAsianWidth::EastAsian = 1; }
+    use Unicode::EastAsianWidth;
+
+    $_ = chr(0x2010); # HYPHEN, an ambiguous-width character
+    /\p{InFullwidth}/;          # True
 
 =head1 DESCRIPTION
 
 This module provide user-defined Unicode properties that deal with
-East Asian characters' width status, as specified in
+width status of East Asian characters, as specified in
 L<http://www.unicode.org/unicode/reports/tr11/>.
 
 It exports the following functions to the caller's scope, to be
@@ -467,16 +470,16 @@ C<InHalfwidth> (union of C<Halfwidth>, C<Narrow> and C<Neutral>).
 
 I<Ambiguous> characters are treated by default as part of
 C<InHalfwidth>, but you can modify this behaviour by assigning
-a true value to C<$Unicode::EastAsianWidth::EastAsian>.
-
-=head1 CAVEATS
-
-Setting C<$Unicode::EastAsianWidth::EastAsian> at run-time only
-works on Perl version 5.8 or above.  Perl 5.6 users must use
-a BEGIN block to set it before the C<use> statement:
+a true value to C<$Unicode::EastAsianWidth::EastAsian> at compile time
+within a C<BEGIN> block before loading this module:
 
     BEGIN { $Unicode::EastAsianWidth::EastAsian = 1 }
     use Unicode::EastAsianWidth;
+
+Setting C<$Unicode::EastAsianWidth::EastAsian> at run-time used to
+work on Perl versions between 5.8 and 5.14 due to an implementation
+detail, but it will no longer work on Perl 5.16 and later versions,
+and hence is not recommended.
 
 =head1 SEE ALSO
 
@@ -485,32 +488,15 @@ L<http://www.unicode.org/unicode/reports/tr11/>
 
 =head1 AUTHORS
 
-Audrey Tang E<lt>cpan@audreyt.orgE<gt>
+唐鳳 E<lt>cpan@audreyt.orgE<gt>
 
-=head1 COPYRIGHT
+=head1 CC0 1.0 Universal
 
-Copyright 2002, 2003, 2007, 2008 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+To the extent possible under law, 唐鳳 has waived all copyright and related
+or neighboring rights to Unicode-EastAsianWidth.
 
-This software is released under the MIT license cited below.
+This work is published from Taiwan.
 
-=head2 The "MIT" License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+L<http://creativecommons.org/publicdomain/zero/1.0>
 
 =cut
